@@ -1,0 +1,10 @@
+DECLARE @string VARCHAR(50)='*';
+
+
+;WITH CTE AS 
+(SELECT @string string,1 length 
+UNION ALL
+SELECT CAST(CONCAT(string,' *') AS VARCHAR(50)),length+1 
+FROM CTE
+WHERE length<20)
+SELECT string FROM CTE
