@@ -1,0 +1,25 @@
+
+select A.contest_id,A.hacker_id,A.name,sum(tot_sub),sum(tot_acc_sub),sum(tot_views),sum(tot_uq_views)
+from
+(select ct.contest_id,ct.hacker_id,ct.name
+--,ss.total_submissions,ss.total_accepted_submissions
+,sum(vs.total_views) tot_views,sum(vs.total_unique_views) tot_uq_views
+from 
+Contests ct 
+inner join Colleges cg on cg.contest_id=ct.contest_id
+inner join Challenges cl on cl.college_id=cg.college_id
+left join view_stats vs on vs.challenge_id=cl.Challenge_id
+group by ct.contest_id,ct.hacker_id,ct.name ) A
+inner join 
+(select ct.contest_id,ct.hacker_id,ct.name
+,sum(ss.total_submissions) tot_sub,sum(ss.total_accepted_submissions) tot_acc_sub
+
+from 
+Contests ct 
+inner join Colleges cg on cg.contest_id=ct.contest_id
+inner join Challenges cl on cl.college_id=cg.college_id
+left join submission_stats ss on ss.challenge_id=cl.Challenge_id
+group by ct.contest_id,ct.hacker_id,ct.name ) B
+on A.contest_id=B.contest_id
+and A.hacker_id=B.hacker_id
+group by A.contest_id,A.hacker_id,A.name
