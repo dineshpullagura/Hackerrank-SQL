@@ -1,0 +1,18 @@
+;WITH CTE AS(
+SELECT hacker_id,submission_date FROM Submissions
+WHERE submission_date='2016-03-01'
+UNION ALL
+SELECT s.hacker_id,s.submission_date
+FROM Submissions s INNER JOIN CTE C ON C.hacker_id=s.hacker_id
+AND s.submission_date=DATEADD(DD,1,C.submission_date))
+SELECT B.submission_date,B.ct,C.hacker_id,C.name FROM
+(SELECT CTE.submission_date,COUNT(DISTINCT hacker_id)ct FROM CTE
+GROUP BY submission_date) B
+INNER JOIN 
+(SELECT h.hacker_id,name,A.submission_date from
+(SELECT hacker_id,submission_date ,
+ROW_NUMBER() OVER(PARTITION BY submission_date ORDER BY COUNT(0) DESC,hacker_id) rn 
+FROM Submissions 
+GROUP BY hacker_id,submission_date) A
+INNER JOIN hackers h ON h.hacker_id=A.hacker_id
+WHERE rn=1) C ON B.submission_date=C.submission_date
