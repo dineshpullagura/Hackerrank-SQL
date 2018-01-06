@@ -1,0 +1,10 @@
+DECLARE @string VARCHAR(50)='* * * * * * * * * * * * * * * * * * * *';
+DECLARE @length INT = LEN(@string)
+
+;WITH CTE AS 
+(SELECT SUBSTRING(@string,1,@length) string,@length-2 length 
+UNION ALL
+SELECT SUBSTRING(string,1,length), length-2 
+FROM CTE
+WHERE length>=0)
+SELECT string FROM CTE
